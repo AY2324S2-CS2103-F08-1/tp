@@ -10,7 +10,7 @@ The user interacts with it using a CLI, and it has a GUI created with JavaFX. It
 
 Given below are my contributions to the project.
 
-* **New Feature**: Added the ability to delete meetings.
+* **New Feature**: Added the ability to delete meetings. ([\#10](https://github.com/AY2324S2-CS2103-F08-1/tp/issues/10))
     * What it does: allows the user to delete meetings that a client has.
     * Justification: This feature is essential to allow financial advisors to manage their client's meetings.
     * Credits: This feature was implemented with reference to AddressBook's delete feature, but
@@ -20,7 +20,7 @@ Given below are my contributions to the project.
 [//]: # (* **Code contributed**: [RepoSense link]&#40;&#41;)
 
 * **Project management**:
-    * Managed release `v1.1` on GitHub
+    * Managed release [`v1.1`](https://github.com/AY2324S2-CS2103-F08-1/tp/milestone/1) on GitHub
 
 [//]: # (* **Enhancements to existing features**:)
 
@@ -28,17 +28,17 @@ Given below are my contributions to the project.
 
 [//]: # (    * Wrote additional tests for existing features to increase coverage from 88% to 92% &#40;Pull requests [\#36]&#40;&#41;, [\#38]&#40;&#41;&#41;)
 
-[//]: # (* **Documentation**:)
+* **Documentation**:
 
-[//]: # (    * User Guide:)
+    * User Guide:
 
-[//]: # (        * Added documentation for the features `delete` and `find` [\#72]&#40;&#41;)
+        * Added documentation for command summary: [\#37](https://github.com/AY2324S2-CS2103-F08-1/tp/issues/37)
 
-[//]: # (        * Did cosmetic tweaks to existing documentation of features `clear`, `exit`: [\#74]&#40;&#41;)
+    * Developer Guide:
 
-[//]: # (    * Developer Guide:)
+        * Added the Non-Functional Requirements section: [\#41](https://github.com/AY2324S2-CS2103-F08-1/tp/issues/41)
 
-[//]: # (        * Added implementation details of the `delete meeting` feature.)
+        * Added the target user profile, value proposition, and user stories: [\#39](https://github.com/AY2324S2-CS2103-F08-1/tp/issues/39)
 
 [//]: # (* **Community**:)
 
