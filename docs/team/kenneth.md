@@ -5,7 +5,7 @@ title: Kenneth Seet's Project Portfolio Page
 
 ### Project: FinCliq
 
-FinCliq is a desktop client and meeting tracker application optimised for CLI users. 
+FinCliq is a desktop client and meeting tracker application optimised for CLI users.
 The user interacts with it using a CLI, and it has a GUI created with JavaFX. It is written in Java, and has about 10 kLoC.
 
 Given below are my contributions to the project.
@@ -13,7 +13,7 @@ Given below are my contributions to the project.
 * **New Feature**: Added the ability to delete meetings.
     * What it does: allows the user to delete meetings that a client has.
     * Justification: This feature is essential to allow financial advisors to manage their client's meetings.
-    * Credits: This feature was implemented with reference to AddressBook's delete feature, but 
+    * Credits: This feature was implemented with reference to AddressBook's delete feature, but
       it was a non-trivial task to adapt it to our application's context.
 
 
@@ -52,4 +52,3 @@ Given below are my contributions to the project.
 
 * **Tools**:
     * Integrated CodeCov to the team repo
-
