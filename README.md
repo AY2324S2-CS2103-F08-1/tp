@@ -2,7 +2,8 @@
 [![CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/se-edu/addressbook-level3/actions)
 [![codecov](https://codecov.io/gh/AY2324S2-CS2103-F08-1/tp/graph/badge.svg?token=KAYNMYZQ21)](https://codecov.io/gh/AY2324S2-CS2103-F08-1/tp)
 
-![Ui](docs/images/Ui.png)
+<img width="566" alt="image" src="https://github.com/timothysashimi/tp/assets/120008429/ed096b29-4beb-4b5b-8fd4-3b9f585ffb84">
+
 
 ### About the App
 * The app allows Financial Advisors to keep track of the clients under them as well as the scheduled meeting with their 
