@@ -46,6 +46,10 @@ Person *--> Address
 Person *--> "*" Tag
 Person *--> "*" Meeting
 
+Meeting *--> Description
+Meeting *--> DateTime
+Meeting *--> Person
+
 AddressBook *--> "1" UniqueMeetingList
 UniqueMeetingList --> "~* all" Meeting
 
@@ -63,6 +67,7 @@ Class AddMeetingCommand {
     +execute(): CommandResult
 }
 AddMeetingCommand ..> Meeting : creates
+EditMeetingCommand ..> Meeting : edits
 
 ModelManager --> "~* filtered" Person
 ModelManager --> "~* filtered" Meeting
