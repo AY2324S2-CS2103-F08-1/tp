@@ -43,7 +43,7 @@ public class StorageManagerTest {
         UserPrefs retrieved = storageManager.readUserPrefs().get();
         assertEquals(original, retrieved);
     }
-
+  
     //    @Test
     //    public void addressBookReadSave() throws Exception {
     //        /*
