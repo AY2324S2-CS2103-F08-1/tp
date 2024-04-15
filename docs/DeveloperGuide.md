@@ -15,9 +15,18 @@ title: Developer Guide
     - 3.4. [Model Component](#model-component)
     - 3.5. [Storage Component](#storage-component)
     - 3.6. [Common Classes](#common-classes)
-4. [Appendix: Requirements](#appendix-requirements)
-5. [Appendix: Instructions for manual testing](#appendix-instructions-for-manual-testing)
-6. [Appendix: Planned enhancements](#appendix-planned-enhancements)
+4. [Implementation](#implementation)<br>
+   - 4.1. [Release v1.2](#release-v12)<br>
+     * 4.1.1. [Add Meeting feature](#add-meeting-feature)
+     * 4.1.2. [Edit Meeting feature](#edit-meeting-feature)
+     * 4.1.3. [Delete Meeting feature](#delete-meeting-feature)
+     * 4.1.4. [View Client feature](#view-client-feature)<br>
+   - 4.2. [Release v1.3](#release-v13)<br>
+     * 4.2.1. [Filter feature](#filter-feature)<br>
+5. [Appendix: Requirements](#appendix-requirements)
+6. [Appendix: Instructions for manual testing](#appendix-instructions-for-manual-testing)
+7. [Appendix: Planned enhancements](#appendix-planned-enhancements)
+8. [Appendix: Effort](#appendix-effort)
 
 
 ---
@@ -172,80 +181,77 @@ Classes used by multiple components are in the `seedu.addressbook.commons` packa
 
 This section describes some noteworthy details on how certain features are implemented.
 
-### [V1.2] Delete Meeting feature
+### Release v1.2
+
+### Add Meeting feature
 
 #### Implementation
 
-**The `DeleteMeetingCommand` is implemented as such:**
+**The `AddMeetingCommand` is implemented as such:**
 
 - `LogicManager`'s execute method is called with the command string which then calls the `parseCommand()` method of `AddressBookParser`
-- `AddressBookParser` then creates a `DeleteMeetingCommandParser` which parses the user input and
-  returns a `DeleteMeetingCommand`
-- The created `DeleteMeetingCommand` is then executed by the `LogicManager`
-- `DeleteMeetingCommand` deletes the meeting of the client corresponding to the indices provided
-  by the user.
-- `DeleteMeetingCommand` creates a `CommandResult` object and returns it to `LogicManager`
-- `LogicManager` then passes `CommandResult` to `UI` who then displays the `Meeting` list without 
-  the deleted meeting
+- `AddressBookParser` then creates a `AddMeetingCommandParser` which parses the user input and
+  returns a `AddMeetingCommand`
+- The created `AddMeetingCommand` is then executed by the `LogicManager`
+- `AddMeetingCommand` adds the meeting to the client's meeting list corresponding to the index provided by the user.
+- The UniqueMeetingList object in the Model is updated with the new meeting
+- `AddMeetingCommand` creates a `CommandResult` object and returns it to `LogicManager`
+- `LogicManager` then passes `CommandResult` to `UI` who then displays the `Meeting` list with the added meeting
 
-**The `DeleteMeetingCommandParser` is implemented as such:**
+**The `AddMeetingCommandParser` is implemented as such:**
 
 - Takes in a `String` input from the user
 - Splits the given `String` and checks if there is more than 1 string provided
     - If more than 1 string was provided, throws `ParseException`
+      -Parser then checks if required prefixes are provided
+    - If not, throws `ParseException`
 - Parser then checks if an empty string was provided
     - If yes, throws `ParseException`
-- If no exception was thrown, the indices corresponding to the `Person` and the `Meeting` 
-  are used to create a `DeleteMeetingCommand` object
+- Parser then checks if duplicate prefixes are provided
+    - If yes, throws `ParseException`
+- Parser then checks if the date, time, description and client index are valid
+    - If not, throws `ParseException`
+- If no exception was thrown, the index corresponding to the `Person`, the date, time and description are used to create a `AddMeetingCommand` object
 
-#### Sequence Diagram
+#### Diagrams
 
-The following sequence diagrams show how the `DeleteMeetingCommand` is executed when the user 
-inputs the command `deleteMeeting clientIndex/2 meetingIndex/2`.
+The following activity diagrams show how the `AddMeetingCommand` and `AddMeetingCommandParser` are executed in the event of valid and invalid user input.
 
-The first diagram shows how the command goes through the `Logic` component:<br>
-<img src="images/DeleteMeetingSequenceDiagramLogic.png" width="1566"  alt="DeleteMeetingCommand sequence diagram"/>
+The first diagram shows how the AddMeetingCommandParser works when valid and invalid user input is given:<br>
+<img src="images/AddMeetingCommandParserActivityDiagram.png" width="1566"  alt="AddMeetingCommandParser activity diagram"/>
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifelines for
-`DeleteMeetingCommandParser` and `DeleteMeetingCommand` should end at the destroy marker (X) but due
-to a limitation of PlantUML, the lifelines reach the end of the diagram.
-</div>
+The second diagram shows how the AddMeetingCommand is executed when the user inputs a valid and invalid command:<br>
+<img src="images/AddMeetingCommandActivityDiagram.png" width="1566"  alt="AddMeetingCommand activity diagram"/>
 
-Similarly, the second diagram shows how the command goes through the `Model` component:<br>
-<img src="images/DeleteMeetingSequenceDiagramModel.png" width="1566"  alt="DeleteMeetingCommand sequence diagram"/>
+The following sequence diagrams show how the 'AddMeetingCommand' is executed when the user
+inputs the command `addMeeting clientIndex/1 dt/02-01-2030 12:00 d/sign life plan`:
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The indices of the
-meeting and person are converted to zero-based indices by the `ModelManager` class, using
-`Index#getZeroBased()`.
-</div>
+<img src="images/AddMeetingCommandSequenceDiagram.png" width="1566"  alt="AddMeetingCommand sequence diagram"/>
 
-The following activity diagram summarises what happens when a user executes the `deleteMeeting` command:
-<img src="images/DeleteMeetingActivityDiagram.png" width="550"  alt="DeleteMeetingCommand activity diagram"/>
+This sequence diagram assumes that a valid addMeeting command is executed and the meeting is added successfully. 
+
 #### Design considerations:
 
-**Aspect: How delete meeting executes:**
+**Aspect: How add meeting executes:**
 
-  * **Alternative 1 (current choice):** Deletes the meeting based on the index provided by the user
+- **Alternative 1 (current choice):** Adds the meeting based on the client index, date, time and description provided by the user
     - Pros:
-      * Easier to implement.
-      * Less error-prone as the user only needs to provide the index.
-      * Users have to type less to enter the index.
+        * More realistic as we would need to consider for conflicting meetings for the same client.
+        * Easier to visualise the different scenarios that could happen.
     - Cons:
-      * Unable to delete meetings based on other criteria such as date, time, etc.
-      * Less flexible.
-      * Less user-friendly.
-  
-  * **Alternative 2:** Deletes the meeting based on the date and time provided by the user
-    - Pros:
-      * Able to delete meetings based on date and time.
-      * More flexible.
-      * More user-friendly.
-    - Cons:
-      * More complex to implement.
-      * More error-prone as the user needs to provide the date and time.
-      * Users have to type more to enter the date and time.
+        * More complex to implement.
+        * More error-prone as the user needs to provide the date and time.
 
-### [V1.2] Edit Meeting feature
+- **Alternative 2:** Adds the meeting based on the date and time provided by the user
+    - Pros:
+        * More flexible.
+        * More user-friendly.
+    - Cons:
+        * Unable to add meetings based on other criteria such as client index, description, etc.
+        * Less realistic as we would need to consider for conflicting meetings for the same client.
+
+
+### Edit Meeting feature
 
 #### Implementation
 
@@ -258,7 +264,7 @@ The following activity diagram summarises what happens when a user executes the 
 - `EditMeetingCommand` edits the meeting of the client corresponding to the indices provided
   by the user.
 - `EditMeetingCommand` creates a `CommandResult` object and returns it to `LogicManager`
-- `LogicManager` then passes `CommandResult` to `UI` who then displays the new `Meeting` list 
+- `LogicManager` then passes `CommandResult` to `UI` who then displays the new `Meeting` list
 
 **The `EditMeetingCommandParser` is implemented as such:**
 
@@ -270,6 +276,20 @@ The following activity diagram summarises what happens when a user executes the 
 - If no exception was thrown, the indices corresponding to the `Person` and the `Meeting`
   are used to create a `EditMeetingCommand` object
 
+#### Sequence Diagrams
+
+The following sequence diagrams show how the `EditMeetingCommand` is executed when the user
+inputs the command `editMeeting clientIndex/2 meetingIndex/2 n/sign life plan dt/01-01-2025 12:00`.
+
+The diagram shows how the command goes through the `Logic` component:<br>
+<img src="images/EditMeetingSequenceDiagram.png" width="1566"  alt="EditMeetingCommand sequence diagram"/>
+
+Do note that the parameters inside all the method calls are either shortened or omitted for brevity as the point of 
+this diagram is to showcase the sequence of method calls and not meant to illustrate the type of parameters each
+method takes in.
+
+### Activity Diagrams
+
 The following activity diagram summarises what happens when a user executes the `editMeeting` command:
 
 <img src="images/EditMeetingCommandActivityDiagram.png" width="550" />
@@ -277,7 +297,7 @@ The following activity diagram summarises what happens when a user executes the 
 
 #### Design considerations:
 
-**Aspect: How edit meeting executes:**
+**Aspect: How the edit meeting feature executes:**
 
 * **Alternative 1 (current choice):** Edits the meeting by directly modifying the current meeting
     - Pros:
@@ -285,7 +305,138 @@ The following activity diagram summarises what happens when a user executes the 
     - Cons:
         * May cause unwanted side effects such as two different meetings (addressbook and client) being modified
 
-### [V1.3] Filter feature
+### Delete Meeting feature
+
+#### Implementation
+
+**The `DeleteMeetingCommand` is implemented as such:**
+
+- `LogicManager`'s execute method is called with the command string which then calls the `parseCommand()` method of `AddressBookParser`
+- `AddressBookParser` then creates a `DeleteMeetingCommandParser` which parses the user input and
+  returns a `DeleteMeetingCommand`
+- The created `DeleteMeetingCommand` is then executed by the `LogicManager`
+- `DeleteMeetingCommand` deletes the meeting of the client corresponding to the indices provided
+  by the user.
+- `DeleteMeetingCommand` creates a `CommandResult` object and returns it to `LogicManager`
+- `LogicManager` then passes `CommandResult` to `UI` who then displays the `Meeting` list without
+  the deleted meeting
+
+**The `DeleteMeetingCommandParser` is implemented as such:**
+
+- Takes in a `String` input from the user
+- Splits the given `String` and checks if there is more than 1 string provided
+    - If more than 1 string was provided, throws `ParseException`
+- Parser then checks if an empty string was provided
+    - If yes, throws `ParseException`
+- If no exception was thrown, the indices corresponding to the `Person` and the `Meeting`
+  are used to create a `DeleteMeetingCommand` object
+
+#### Sequence Diagrams
+
+The following sequence diagrams show how the `DeleteMeetingCommand` is executed when the user
+inputs the command `deleteMeeting clientIndex/2 meetingIndex/2`.
+
+The first diagram shows how the command goes through the `Logic` component:<br>
+<img src="images/DeleteMeetingSequenceDiagramLogic.png" width="1566"  alt="DeleteMeetingCommand sequence diagram"/>
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for
+`DeleteMeetingCommandParser` should end at the destroy marker (X) but due
+to a limitation of PlantUML, the lifeline reaches the end of the diagram.
+</div>
+
+Similarly, the second diagram shows how the command goes through the `Model` component:<br>
+<img src="images/DeleteMeetingSequenceDiagramModel.png" width="1566"  alt="DeleteMeetingCommand sequence diagram"/>
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The indices of the
+meeting and person are converted to zero-based indices by the `ModelManager` class, using
+`Index#getZeroBased()`.
+</div>
+
+### Activity Diagram
+The following activity diagram summarises what happens when a user executes the `deleteMeeting` 
+command:<br>
+<img src="images/DeleteMeetingActivityDiagram.png" width="550"  alt="DeleteMeetingCommand activity diagram"/>
+#### Design considerations:
+
+**Aspect: How delete meeting executes:**
+
+* **Alternative 1 (current choice):** Deletes the meeting based on the index provided by the user
+    - Pros:
+        * Easier to implement.
+        * Less error-prone as the user only needs to provide the index.
+        * Users have to type less to enter the index.
+    - Cons:
+        * Unable to delete meetings based on other criteria such as date, time, etc.
+        * Less flexible.
+        * Less user-friendly.
+
+* **Alternative 2:** Deletes the meeting based on the date and time provided by the user
+    - Pros:
+        * Able to delete meetings based on date and time.
+        * More flexible.
+        * More user-friendly.
+    - Cons:
+        * More complex to implement.
+        * More error-prone as the user needs to provide the date and time.
+        * Users have to type more to enter the date and time.
+
+### View Client feature
+
+#### Implementation
+
+**The `ViewClientCommand` is implemented as such:**
+
+- `LogicManager`'s execute method is called with the command string which then calls the `parseCommand()` method of `AddressBookParser`
+- `AddressBookParser` then creates a `ViewCommandParser` which parses the user input and
+  returns a `ViewClientCommand`
+- The created `ViewClientCommand` is then executed by the `LogicManager`
+- `ViewClientCommand` filters through the list of `Person` based on the index provided by the user.
+- `ViewClientCommand` creates a `CommandResult` object and returns it to `LogicManager`
+- `LogicManager` then passes `CommandResult` to `UI` who then displays the new `Person` as well as the person's `Meetings`
+
+**The `ViewCommandParser` is implemented as such:**
+
+- Takes in a `String` input from the user
+- Splits the given `String` based on the prefixes.
+    - If one or more prefixes are missing, throws `ParseException`
+- Parser then checks if an empty string was provided
+    - If yes, throws `ParseException`
+- Parser then checks if the prefix `c` is given
+    - If no, throws `ParseException`
+- If no exception was thrown, the index corresponding to the `Person` is used to create a `ViewClientCommand` object
+
+The following activity diagram summarises what happens when a user executes the `ViewClientCommand` command:
+
+<img src="images/ViewClientActivityDiagram.png" width="700"/>
+
+The following sequence diagram summarises what happens when a user executes the `ViewClientCommand` command:
+
+<img src="images/ViewClientCommand.png" width="700"/>
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifelines for
+`ViewCommandParser` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifelines reach the end of the diagram.
+</div>
+
+
+#### Design considerations:
+
+**Aspect: How ViewClientCommand executes:**
+
+* **Alternative 1 (current choice):** Views the client based on the given index as well as a prefix `c`
+    - Pros:
+        * Easier to implement.
+        * Built in OOP fashion with a parent `ViewCommand` class, this allows us to expand to other `View` methods such as `ViewMeeting` in the future
+
+* **Alternative 2:** Views the client based on client's name
+    - Pros:
+        * More intuitive to search.
+    - Cons:
+        * Very similar to the current `Find` feature 
+        * Harder to implement due to bugs that could come from a `String` input.
+
+### Release v1.3
+
+### Filter feature
 
 #### Implementation
 
@@ -507,7 +658,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 - **Use Case**: A description of a specific user goal or task and the steps required to achieve it.
 - **Mainstream OS**: Windows, Linux, Unix, MacOS
 - **Private contact detail**: A contact detail that is not meant to be shared with others
-- **CLI**: A command line interface (CLI) is a software mechanism you use to interact with your 
+- **CLI**: A command line interface (CLI) is a software mechanism you use to interact with your
   operating system using your keyboard.
 
 ---
@@ -607,12 +758,12 @@ testers are expected to do more *exploratory* testing.
 
     1. Prerequisites: At least 1 client in client list
 
-    2. Test case: `filter friends`
-       Expected: Shows all clients who have the tag "friends"
+    2. Test case: `filter [valid tag]`
+       Expected: Shows all clients who have the tag: `valid tag`
 
     3. Test case: `filter [invalid tag]`
        Expected: Shows all clients. Error details that tag provided does not belong to any client.
-   
+
     4. Test case: `filter [tag_1] [tag_2]`
        Expected: Error thrown to tell user to only input a singular Tag
 
@@ -626,7 +777,10 @@ testers are expected to do more *exploratory* testing.
     1. Test case: ` addMeeting clientIndex/1 dt/02-01-2030 12:00 d/sign life plan`<br>
        Expected: A new meeting is added to the list. The meeting's details are shown in the list,
        and the status bar shows the meeting's details.
-
+    1. Test case: `addMeeting clientIndex/0 dt/02-01-2030 12:00 d/sign life plan`<br>
+       Expected: Meeting is not added. Index should be one-based. Error details shown in the status message.
+    1. Test case: `addMeeting clientIndex/2 dt/02-01-2030 12:00 d/sign life plan`<br>
+       Expected: Meeting is added to the list as different client with the same description at the same date and time is allowed. The meeting's details are shown in the list, and the status bar shows the meeting's details.
     1. Test case: `addMeeting clientIndex/1 dt/02-01-2024 12:00 d/sign life plan`<br>
        Expected: Meeting is not added because the date has already elapsed. Error details shown in
        status message.
@@ -704,12 +858,12 @@ To implement this, there has to be a check to ensure that the meeting timing doe
 **Aspect: How to ensure that the meeting timing does not clash with any other meetings:**
 
 * When a new meeting is added or edited, check if the meeting timing clashes with any other meetings.
-    * Pros: 
-      * Prevents scheduling conflicts.
-      * Prevents confusion for the financial advisor.
-    * Cons: 
-      * Additional check required when adding/editing meetings. 
-      * Difficult to implement due to having to check against meetings that all other clients have.
+    * Pros:
+        * Prevents scheduling conflicts.
+        * Prevents confusion for the financial advisor.
+    * Cons:
+        * Additional check required when adding/editing meetings.
+        * Difficult to implement due to having to check against meetings that all other clients have.
 
 
 ### 2. Shorten command words to improve user experience
@@ -728,12 +882,12 @@ command words, such as `am` for `addMeeting`, `dm` for `deleteMeeting`, `em` for
 **Aspect: How to shorten the command words:**
 
 * Update the command words in the different `Command` classes to shorter command words.
-    * Pros: 
-      * Easy to implement.
-      * Decreases the time taken to type commands.
-    * Cons: 
-      * May be confusing for users who are used to the current command words.
-      * May require additional documentation to explain the new command words.
+    * Pros:
+        * Easy to implement.
+        * Decreases the time taken to type commands.
+    * Cons:
+        * May be confusing for users who are used to the current command words.
+        * May require additional documentation to explain the new command words.
 
 ### 3. Allow different clients with same name but different phone number and email to be added
 
@@ -749,13 +903,13 @@ To implement this, the check for duplicate clients in the `Person` class will ha
 **Aspect: How to allow different clients with the same name but different phone number and email to be added:**
 
 * Update the check for duplicate clients in the `Person` class to allow clients with the same name but different phone number and email to be added.
-    * Pros: 
-      * Prevents confusion for users who are adding different clients with the same name.
-      * Allows for more flexibility when adding clients.
-      * Reflects real-world scenarios where clients may have the same name but are different people.
-    * Cons: 
-      * May cause confusion for users who are used to the current behaviour.
-      * The logic to check for duplicate clients will have to be updated. 
+    * Pros:
+        * Prevents confusion for users who are adding different clients with the same name.
+        * Allows for more flexibility when adding clients.
+        * Reflects real-world scenarios where clients may have the same name but are different people.
+    * Cons:
+        * May cause confusion for users who are used to the current behaviour.
+        * The logic to check for duplicate clients will have to be updated.
 
 
 ### 4. Prevent the addition of clients with duplicate phone numbers and emails
@@ -769,14 +923,14 @@ To implement this, the check for duplicate clients in the `Person` class will ha
 **Aspect: How to prevent the addition of clients with duplicate phone numbers and emails:**
 
 * Update the check for duplicate clients in the `Person` class to prevent clients with the same phone number or email from being added.
-    * Pros: 
-      * Prevents confusion for users who may be entering duplicate phone numbers or emails 
-        unintentionally.
-      * Reflects real-world scenarios where clients should have unique phone numbers and emails.
-    * Cons: 
-      * May cause confusion for users who are used to the current behaviour.
-      * The logic to check for duplicate clients will have to be updated to check for duplicate 
-        phone numbers and emails.
+    * Pros:
+        * Prevents confusion for users who may be entering duplicate phone numbers or emails
+          unintentionally.
+        * Reflects real-world scenarios where clients should have unique phone numbers and emails.
+    * Cons:
+        * May cause confusion for users who are used to the current behaviour.
+        * The logic to check for duplicate clients will have to be updated to check for duplicate
+          phone numbers and emails.
 
 ### 5. Make the flag for `DESCRIPTION` for `addMeeting` `editMeeting` consistent.
 
@@ -793,11 +947,11 @@ be updated in the `Command` classes.
 **Aspect: How to make the flag for `DESCRIPTION` for `addMeeting` and `editMeeting` consistent:**
 
 * Update the flag for the description for `addMeeting` and `editMeeting` to be consistent.
-    * Pros: 
-      * Easy to implement.
-      * Improves consistency across commands.
-    * Cons: 
-      * May cause confusion for users who are used to the current behaviour.
+    * Pros:
+        * Easy to implement.
+        * Improves consistency across commands.
+    * Cons:
+        * May cause confusion for users who are used to the current behaviour.
 
 ### 6. Validate the email format for `Person` objects
 
@@ -806,11 +960,11 @@ Currently, the app does not validate the email format for `Person` objects. This
 **Aspect: How to validate the email format for `Person` objects:**
 
 * Update the `Person` class to have a validation regex for the email field.
-    * Pros: 
-      * Helps to inform the user that the email format is invalid.
-    * Cons: 
-      * Additional validation logic has to be added to the `Person` class.
-      * It is difficult to account for all possible email formats.
+    * Pros:
+        * Helps to inform the user that the email format is invalid.
+    * Cons:
+        * Additional validation logic has to be added to the `Person` class.
+        * It is difficult to account for all possible email formats.
 
 ### 7. Update the error message for `view c` for single client case
 
@@ -821,10 +975,10 @@ Currently, the `view c` command returns the error: `If you wish to view another 
 * Update the condition checking `execute()` method of the `ViewClientCommand` class to account for 2 scenarios
     * Scenario 1: If user is already viewing that client and inputs the same index, in this case `1`
     * Scenario 2: If there is only 1 client in the `Clients` list and user inputs that index, also by inputting `1`
-    * Pros: 
-      * Easy to implement, clears up confusion of users when using the `view c` command and thinking that their inputs were valid.
-    * Cons: 
-      * Additional variable has to be added in order to account for Scenario 2
+    * Pros:
+        * Easy to implement, clears up confusion of users when using the `view c` command and thinking that their inputs were valid.
+    * Cons:
+        * Additional variable has to be added in order to account for Scenario 2
 
 ### 8. Update the error message or command information for `view c` to accomodate for edge cases.
 
@@ -833,4 +987,29 @@ Currently, the `view c` command if given invalid arguments returns the error: `I
 **Aspect: How to make the command more fool-proof**
 
 * Update the error message of the `view c` command to display the incorrect index provided, supposing the user type used the command with special characters such as `/`
-* Or we can update the current error message to specify that the parameters in this case `index` should be a positive integer without any special characters to reduce any ambiguity. 
+* Or we can update the current error message to specify that the parameters in this case `index` should be a positive integer without any special characters to reduce any ambiguity.
+
+### 9. Allow editMeeting to take in only one meeting component to edit.
+
+Currently, the `editMeeting` command requires the user to key in information for both `n/` and `dt` to edit an existing meeting. This may be inconvenient if the user only plans to edit one component. 
+
+**Aspect: How to make the command more convenient**
+
+* Allow the user to edit a meeting by keying in information for either `n/` or `dt` and only that specific meeting component will be edited.
+---
+
+## **Appendix: Effort**
+
+### Challenges faced
+
+1. **Understanding the codebase**: The codebase was quite large and complex, and it took some time to understand how the different components interacted with each other.
+2. **Implementing new features**: Designing our new features required a lot of thought and planning to ensure that it would not break existing features and that it would be easy to use for the end user. Examples include what parameters to take in, how to handle edge cases, and how to display the information to the user. 
+3. **Cyclic dependencies**: We faced the chicken and egg problem when trying to implement our new features as meeting and client classes were dependent on each other. This resulted in several existing test cases failing as our PersonBuilder class tried to build a Person object with a meeting object but this was not possible due to the cyclic dependency.
+4. **Testing** : Testing was a challenge as we had to ensure that our new features did not break existing features and that they worked as expected. This required a lot of manual testing and writing new test cases to cover the new features. We faced issues with the builder classes and instantiation of objects in the test classes as it made it complicated and difficult to test. E.g. deleteMeeting test cases were failing for a couple of days as we were kept facing different indexes in the test cases.
+5. **Storage**: We faced issues with storage as our person object contained a meeting list and since our meeting object has a person attribute, when stored as a JSON object, there would be a cycle and each person json object would be endless. This was solved by making use of multiple constructors and saving our meeting objects as meetings without the person attribute. When deserializing, we would then add the person attribute back to the meeting object.
+6. **Refactoring**: Refactoring was a challenge as we had to ensure that our new features were integrated seamlessly with the existing codebase. This required a lot of thought and planning to ensure that the code was clean and maintainable. We faced issues with the naming of our classes and methods as we had to ensure that they were descriptive and followed the naming conventions.
+7. **Time management**: Time management was a challenge as we had to balance our other commitments with working on the project. This required a lot of planning and prioritization to ensure that we met our deadlines and delivered a high-quality product.
+8. **Communication**: As we all had different schedules and commitments, we had to communicate well to ensure that we were all on the same page and that we were updated on the progress of the project. There were blocker features where one feature would rely on another. We had to communicate well to ensure that our parameters were aligned, logic and understanding of our eventual output was the same.
+<br>
+
+---
