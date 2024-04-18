@@ -12,7 +12,6 @@ We are a team based in the [School of Computing, National University of Singapor
 <img src="images/jaejayrome.png" width="200px">
 
 [[github](https://github.com/jaejayrome)]
-[[portfolio](team/jaejayrome.md)]
 
 - Role: Developer
 - Responsibilities: Model
