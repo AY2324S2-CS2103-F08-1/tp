@@ -12,9 +12,11 @@ Given below are my contributions to the project.
 
 * **New Feature**:
   * Added the addMeeting command
-  * Edited Meeting Model class
+  * Edited Meeting Model class and Person Model class
   * Edited UniqueMeetingList class
   * Fixed bugs related to Storage
+  * Fixed bugs related to the cyclic depenndency
+  * Worked on the design on our new Meeting feature
   * **Code contributed**:
       * [RepoSense link](https://nus-cs2103-ay2324s2.github.io/tp-dashboard/?search=&sort=groupTitle&sortWithin=title&timeframe=commit&mergegroup=&groupSelect=groupByRepos&breakdown=true&checkedFileTypes=docs~functional-code~test-code~other&since=2024-02-23&tabOpen=true&tabType=authorship&tabAuthor=chewbum&tabRepo=AY2324S2-CS2103-F08-1%2Ftp%5Bmaster%5D&authorshipIsMergeGroup=false&authorshipFileTypes=docs&authorshipIsBinaryFileTypeChecked=false&authorshipIsIgnoredFilesChecked=false)
 
@@ -31,4 +33,7 @@ Given below are my contributions to the project.
         * Edited datetime format in UG
     * Developer Guide:
         * Updated Glossary to fit our project requirements: [\#42](https://github.com/AY2324S2-CS2103-F08-1/tp/issues/41)
+        * Added activity and sequence diagrams for addMeeting
+        * Added Appendix: Effort section
+        * Fixed bugs and typos found in DG
 
