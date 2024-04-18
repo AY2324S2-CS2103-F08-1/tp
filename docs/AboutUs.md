@@ -21,6 +21,7 @@ We are a team based in the [School of Computing, National University of Singapor
 <img src="images/timothysashimi.png" width="200px">
 
 [[github](http://github.com/timothysashimi)]
+[[portfolio](team/timothysashimi.md)]
 
 - Role: Developer
 - Responsibilities: UI
